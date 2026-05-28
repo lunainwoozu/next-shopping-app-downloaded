@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { HeroBanner } from "@/components/HeroBanner";
+import { Footer } from "@/components/Footer";
 
 interface HomePageProps {
   searchParams: Promise<{ category?: string }>;
@@ -61,6 +62,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       {/* 상품 목록 */}
       <ProductGrid products={products} />
+
+      <Footer />
     </div>
   );
 }
