@@ -20,10 +20,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex gap-6 min-h-[calc(100vh-8rem)]">
+    <div className="flex flex-col md:flex-row gap-6 min-h-[calc(100vh-8rem)]">
       {/* 사이드바 */}
-      <aside className="w-44 shrink-0">
-        <div className="bg-gray-50 rounded-xl border p-4 sticky top-24">
+      <aside className="w-full md:w-44 md:shrink-0">
+        <div className="bg-gray-50 rounded-xl border p-4 md:sticky md:top-24">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-2">
             관리자 메뉴
           </p>

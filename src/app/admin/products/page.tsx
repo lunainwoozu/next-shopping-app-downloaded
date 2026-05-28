@@ -6,8 +6,7 @@ import Image from "next/image";
 import { Minus, Plus, Pencil, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ProductAddModal } from "@/components/admin/ProductAddModal";
-import { ProductEditModal } from "@/components/admin/ProductEditModal";
+import { ProductFormModal } from "@/components/admin/ProductFormModal";
 
 const ADMIN_PRODUCTS_KEY = ["admin", "products"] as const;
 
@@ -69,7 +68,6 @@ export default function AdminProductsPage() {
   });
 
   // ── 재고 조절 mutation ──────────────────────────────────────
-  // variables 를 통해 "지금 어떤 상품이 pending인지" 구분
   const stockMutation = useMutation({
     mutationFn: ({ id, stock }: { id: string; stock: number }) =>
       patchProduct(id, { stock }),
@@ -85,6 +83,7 @@ export default function AdminProductsPage() {
       queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_KEY });
       setDeleteConfirmId(null);
       setDeleteError(null);
+      setEditProduct(null); // 모달에서 삭제 시 모달도 닫기
     },
     onError: (err: Error) => {
       setDeleteError(err.message);
@@ -142,8 +141,8 @@ export default function AdminProductsPage() {
           <p>등록된 상품이 없습니다</p>
         </div>
       ) : (
-        <div className="border rounded-xl overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="border rounded-xl overflow-x-auto">
+          <table className="w-full text-sm min-w-[400px]">
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-500 w-16">
@@ -158,22 +157,21 @@ export default function AdminProductsPage() {
                 <th className="text-right px-4 py-3 font-medium text-gray-500">
                   가격
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-gray-500 w-36">
+                {/* 재고 열 — 모바일 숨김 */}
+                <th className="hidden md:table-cell text-center px-4 py-3 font-medium text-gray-500 w-36">
                   재고
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-gray-500 w-28">
+                <th className="hidden md:table-cell text-center px-4 py-3 font-medium text-gray-500 w-28">
                   액션
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {products.map((product) => {
-                // 이 상품의 재고 mutation이 진행 중인지 여부
                 const isStockPending =
                   stockMutation.isPending &&
                   stockMutation.variables?.id === product.id;
 
-                // 이 상품의 삭제가 진행 중인지 여부
                 const isDeletePending =
                   deleteMutation.isPending &&
                   deleteMutation.variables === product.id;
@@ -202,8 +200,15 @@ export default function AdminProductsPage() {
                       )}
                     </td>
 
-                    {/* 상품명 */}
-                    <td className="px-4 py-3 font-medium">{product.name}</td>
+                    {/* 상품명 — 모바일에서 클릭 시 수정 모달 */}
+                    <td
+                      className="px-4 py-3 font-medium cursor-pointer hover:text-blue-600 md:cursor-default md:hover:text-inherit"
+                      onClick={() => {
+                        if (window.innerWidth < 768) setEditProduct(product);
+                      }}
+                    >
+                      {product.name}
+                    </td>
 
                     {/* 카테고리 */}
                     <td className="px-4 py-3 text-gray-500">
@@ -215,8 +220,8 @@ export default function AdminProductsPage() {
                       {product.price.toLocaleString()}원
                     </td>
 
-                    {/* 재고 — 인라인 스테퍼 */}
-                    <td className="px-4 py-3">
+                    {/* 재고 — 인라인 스테퍼 (모바일 숨김) */}
+                    <td className="hidden md:table-cell px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() =>
@@ -234,9 +239,7 @@ export default function AdminProductsPage() {
 
                         <span
                           className={`w-10 text-center font-medium tabular-nums ${
-                            product.stock === 0
-                              ? "text-red-500"
-                              : "text-gray-800"
+                            product.stock === 0 ? "text-red-500" : "text-gray-800"
                           } ${isStockPending ? "opacity-50" : ""}`}
                         >
                           {product.stock}
@@ -258,8 +261,8 @@ export default function AdminProductsPage() {
                       </div>
                     </td>
 
-                    {/* 액션 — 수정 / 삭제 (2단계 확인) */}
-                    <td className="px-4 py-3">
+                    {/* 액션 — 수정 / 삭제 (2단계 확인, 모바일 숨김) */}
+                    <td className="hidden md:table-cell px-4 py-3">
                       {deleteConfirmId === product.id ? (
                         /* 삭제 확인 상태 */
                         <div className="flex flex-col items-center gap-1.5">
@@ -282,9 +285,7 @@ export default function AdminProductsPage() {
                               취소
                             </button>
                             <button
-                              onClick={() =>
-                                deleteMutation.mutate(product.id)
-                              }
+                              onClick={() => deleteMutation.mutate(product.id)}
                               disabled={isDeletePending}
                               className="text-xs px-2.5 py-1 rounded bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 transition-colors"
                             >
@@ -295,7 +296,6 @@ export default function AdminProductsPage() {
                       ) : (
                         /* 기본 상태 */
                         <div className="flex items-center justify-center gap-1">
-                          {/* 수정 버튼 */}
                           <button
                             onClick={() => setEditProduct(product)}
                             className="p-1.5 rounded hover:bg-blue-50 text-blue-500 transition-colors"
@@ -303,7 +303,6 @@ export default function AdminProductsPage() {
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
-                          {/* 삭제 버튼 */}
                           <button
                             onClick={() => {
                               setDeleteConfirmId(product.id);
@@ -326,18 +325,24 @@ export default function AdminProductsPage() {
       )}
 
       {/* 상품 등록 모달 */}
-      <ProductAddModal
-        open={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSuccess={handleSuccess}
-      />
+      {isAddModalOpen && (
+        <ProductFormModal
+          onClose={() => setIsAddModalOpen(false)}
+          onSuccess={handleSuccess}
+        />
+      )}
 
-      {/* 상품 수정 모달 — editProduct가 있을 때만 렌더 (마운트/언마운트로 폼 초기화) */}
+      {/* 상품 수정 모달 — 마운트/언마운트로 폼 초기화 */}
       {editProduct && (
-        <ProductEditModal
+        <ProductFormModal
           product={editProduct}
           onClose={() => setEditProduct(null)}
           onSuccess={handleSuccess}
+          onDelete={() => deleteMutation.mutate(editProduct.id)}
+          isDeleting={
+            deleteMutation.isPending &&
+            deleteMutation.variables === editProduct.id
+          }
         />
       )}
     </div>

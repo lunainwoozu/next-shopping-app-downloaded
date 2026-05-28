@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { SignOutButton } from "./SignOutButton";
-import { CartBadge } from "./CartBadge"; // ← 이 줄을 추가합니다
+import { CartBadge } from "./CartBadge";
+import { MobileMenu } from "./MobileMenu";
 
 export async function Header() {
   const session = await auth();
@@ -14,16 +15,15 @@ export async function Header() {
           🛍️ ShopApp
         </Link>
 
-        {/* 네비게이션 */}
-        <nav className="flex items-center gap-6">
+        {/* 데스크톱 네비게이션 */}
+        <nav className="hidden md:flex items-center gap-6">
           <Link
             href="/products"
             className="text-sm text-gray-600 hover:text-gray-900"
           >
             상품 목록
           </Link>
-          <CartBadge userId={session?.user?.id} />{" "}
-          {/* 장바구니 배지를 여기에 추가합니다 */}
+          <CartBadge userId={session?.user?.id} />
           {session?.user?.role === "admin" && (
             <Link
               href="/admin/products"
@@ -34,8 +34,8 @@ export async function Header() {
           )}
         </nav>
 
-        {/* 인증 영역 */}
-        <div className="flex items-center gap-3">
+        {/* 데스크톱 인증 영역 */}
+        <div className="hidden md:flex items-center gap-3">
           {session ? (
             <>
               <span className="text-sm text-gray-600">
@@ -66,6 +66,14 @@ export async function Header() {
             </>
           )}
         </div>
+
+        {/* 모바일 햄버거 메뉴 */}
+        <MobileMenu
+          userName={session?.user?.name}
+          isAdmin={session?.user?.role === "admin"}
+          isLoggedIn={!!session}
+          userId={session?.user?.id}
+        />
       </div>
     </header>
   );
