@@ -12,7 +12,7 @@ export async function Header() {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* 로고 */}
         <Link href="/" className="text-xl font-bold text-gray-900">
-          🛍️ ShopApp
+          🛍️ ShopApp2
         </Link>
 
         {/* 데스크톱 네비게이션 */}
