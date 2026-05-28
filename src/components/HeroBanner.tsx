@@ -1,11 +1,9 @@
 "use client";
-
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 
 export function HeroBanner() {
-
+  const router = useRouter();
   return (
     <section className="hero" data-screen-label="hero">
       <div className="hero__media" style={{ aspectRatio: "21/9" }}>
@@ -16,8 +14,8 @@ export function HeroBanner() {
               <div className="eyebrow">SS / 26 · NEW ARRIVAL</div>
               <h1>잘 만든 옷,<br/>오래 입는 즐거움.</h1>
               <p>봄 시즌, 매일 손이 가는 기본을 골랐습니다.</p>
-              <button className="btn btn--invert" onClick={() => navigate("/products")}>
-                컬렉션 보기 <Icon.arrow />
+              <button className="btn btn--invert" onClick={() => router.push("/products")}>
+                컬렉션 보기 <ArrowRight />
               </button>
             </div>
           </div>
