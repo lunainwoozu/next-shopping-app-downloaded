@@ -1,69 +1,80 @@
-import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { HeroBanner } from "@/components/home/HeroBanner";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import { HeroBanner } from "@/components/HeroBanner";
-import { Footer } from "@/components/Footer";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
-interface HomePageProps {
-  searchParams: Promise<{ category?: string }>;
-}
-
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const { category } = await searchParams;
-
-  const products = await prisma.product.findMany({
-    where: category ? { category } : undefined,
-    orderBy: { createdAt: "desc" },
-  });
-
-  const categories = await prisma.product.findMany({
-    select: { category: true },
-    distinct: ["category"],
-    where: { category: { not: null } },
-  });
-
-  const categoryList = categories
-    .map((p) => p.category)
-    .filter(Boolean) as string[];
+export default async function HomePage() {
+  const [featured, rest] = await Promise.all([
+    prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 4,
+    }),
+    prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      skip: 4,
+    }),
+  ]);
 
   return (
     <div>
       {/* 히어로 배너 슬라이더 */}
       <HeroBanner />
 
-      <h1 className="text-2xl font-bold mb-6">전체 상품</h1>
-
-      {/* 카테고리 필터 */}
-      <div className="flex gap-2 mb-8 flex-wrap">
-        <Link
-          href="/"
-          className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-            !category
-              ? "bg-gray-900 text-white border-gray-900"
-              : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
-          }`}
-        >
-          전체
-        </Link>
-        {categoryList.map((cat) => (
+      <section className="mx-auto max-w-[1280px] px-4 md:px-6 mt-16 md:mt-24">
+        <div className="flex items-end justify-between gap-6 mb-8 md:mb-12 pb-6 border-b border-gray-200">
+          <div>
+            <div className="text-[11px] tracking-[0.12em] uppercase text-gray-500 font-mono mb-2">
+              EDITOR&apos;S PICK
+            </div>
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+              이번 주의 선택
+            </h2>
+          </div>
           <Link
-            key={cat}
-            href={`/?category=${encodeURIComponent(cat)}`}
-            className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-              category === cat
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
-            }`}
+            href="/products"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap"
           >
-            {cat}
+            {"전체 보기"} <ArrowRight size={12} />
           </Link>
-        ))}
-      </div>
+        </div>
+        <ProductGrid products={featured} />
+      </section>
 
-      {/* 상품 목록 */}
-      <ProductGrid products={products} />
+      <section className="mx-auto max-w-[1280px] px-4 md:px-6 mt-20 md:mt-28">
+        <div className="flex items-end justify-between gap-6 mb-8 md:mb-12 pb-6 border-b border-gray-200">
+          <div>
+            <div className="text-[11px] tracking-[0.12em] uppercase text-gray-500 font-mono mb-2">
+              EDITOR&apos;S PICK
+            </div>
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+              이번 주의 선택
+            </h2>
+          </div>
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap"
+          >
+            {"전체 보기"} <ArrowRight size={12} />
+          </Link>
+        </div>
+        <ProductGrid products={featured} />
 
-      <Footer />
+        <div className="flex items-end justify-between gap-6 mb-8 md:mb-12 pb-6 border-b border-gray-200">
+          <div>
+            <div className="text-[11px] tracking-[0.12em] uppercase text-gray-500 font-mono mb-2">
+              NEW IN
+            </div>
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+              신상품
+            </h2>
+          </div>
+          <span className="text-[11px] tracking-[0.12em] uppercase text-gray-500 font-mono whitespace-nowrap">
+            {`${String(rest.length).padStart(2, "0")} ITEMS`}
+          </span>
+        </div>
+        <ProductGrid products={rest} />
+      </section>
     </div>
   );
 }
