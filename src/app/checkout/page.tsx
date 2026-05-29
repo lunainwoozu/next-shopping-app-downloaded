@@ -5,9 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCartStore } from "@/store/cartStore";
 import { orderSchema, OrderFormData } from "@/schemas/order.schema";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import Image from "next/image";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -21,14 +20,12 @@ export default function CheckoutPage() {
     resolver: zodResolver(orderSchema),
   });
 
-  // 장바구니가 비어 있으면 상품 목록으로 리다이렉트 (useEffect 사용 필수)
   useEffect(() => {
     if (items.length === 0) {
       router.push("/products");
     }
-  }, [items.length, router]); // items.length 변경 시마다
+  }, [items.length, router]);
 
-  // 장바구니가 비어 있으면 상품 목록으로 리다이렉트
   if (items.length === 0) {
     return null;
   }
@@ -54,97 +51,138 @@ export default function CheckoutPage() {
         return;
       }
 
-      // 주문 성공 → 장바구니 비우기 → 완료 페이지 이동
+      const { orderId } = await response.json();
       clearCart();
-      router.push("/order-complete");
+      router.push(`/order-complete?id=${orderId}`);
     } catch {
       alert("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-8">주문하기</h1>
+    <>
+      <div className="pb-6">
+        <div className="eyebrow mb-3">Checkout</div>
+        <h1 className="text-[28px] font-normal tracking-[-0.01em]">
+          주문하기
+        </h1>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* 주문 폼 */}
+      <div className="checkout">
+        {/* ── 좌: 배송지 폼 ─────────────────────────── */}
         <div>
-          <h2 className="font-semibold text-lg mb-4">배송지 정보</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                받는 분 이름
-              </label>
-              <Input {...register("receiverName")} placeholder="홍길동" />
-              {errors.receiverName && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.receiverName.message}
-                </p>
-              )}
+          <div className="panel">
+            <div className="panel__head">
+              <span className="panel__title">배송지 정보</span>
+              <span className="panel__num">01</span>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                전화번호
-              </label>
-              <Input
-                {...register("receiverPhone")}
-                placeholder="010-1234-5678"
-              />
-              {errors.receiverPhone && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.receiverPhone.message}
-                </p>
-              )}
-            </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="field">
+                <label htmlFor="receiverName">받는 분</label>
+                <input
+                  id="receiverName"
+                  {...register("receiverName")}
+                  placeholder="홍길동"
+                />
+                {errors.receiverName && (
+                  <span className="text-xs text-destructive">
+                    {errors.receiverName.message}
+                  </span>
+                )}
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">
-                배송 주소
-              </label>
-              <Input
-                {...register("address")}
-                placeholder="서울시 강남구 테헤란로 123"
-              />
-              {errors.address && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.address.message}
-                </p>
-              )}
-            </div>
+              <div className="field">
+                <label htmlFor="receiverPhone">전화번호</label>
+                <input
+                  id="receiverPhone"
+                  {...register("receiverPhone")}
+                  placeholder="010-1234-5678"
+                />
+                {errors.receiverPhone && (
+                  <span className="text-xs text-destructive">
+                    {errors.receiverPhone.message}
+                  </span>
+                )}
+              </div>
 
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full mt-2"
-            >
-              {isSubmitting ? "처리 중..." : "결제하기"}
-            </Button>
-          </form>
+              <div className="field">
+                <label htmlFor="address">배송 주소</label>
+                <input
+                  id="address"
+                  {...register("address")}
+                  placeholder="서울시 강남구 테헤란로 123"
+                />
+                {errors.address && (
+                  <span className="text-xs text-destructive">
+                    {errors.address.message}
+                  </span>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn btn--primary btn--block mt-6"
+              >
+                {isSubmitting ? "처리 중..." : "결제하기"}
+              </button>
+            </form>
+          </div>
         </div>
 
-        {/* 주문 요약 */}
+        {/* ── 우: 주문 요약 ─────────────────────────── */}
         <div>
-          <h2 className="font-semibold text-lg mb-4">주문 상품</h2>
-          <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-            {items.map((item) => (
-              <div key={item.id} className="flex justify-between text-sm">
-                <span className="text-gray-700">
-                  {item.name} × {item.quantity}
-                </span>
-                <span className="font-medium">
-                  {(item.price * item.quantity).toLocaleString("ko-KR")}원
-                </span>
-              </div>
-            ))}
+          <div className="panel">
+            <div className="panel__head">
+              <span className="panel__title">주문 상품</span>
+              <span className="panel__num">02</span>
+            </div>
 
-            <div className="border-t border-gray-200 pt-3 flex justify-between font-bold">
+            <div>
+              {items.map((item) => (
+                <div key={item.id} className="order-summary__row">
+                  <div className="order-summary__media">
+                    {item.imageUrl && (
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="order-summary__name">
+                    {item.name}
+                    <div className="sub">수량 {item.quantity}</div>
+                  </div>
+                  <div className="order-summary__price">
+                    {(item.price * item.quantity).toLocaleString("ko-KR")}원
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="summary">
+            <h3>결제 금액</h3>
+            <div className="summary__row">
+              <span>상품 금액</span>
+              <span>{totalPrice().toLocaleString("ko-KR")}원</span>
+            </div>
+            <div className="summary__row">
+              <span>배송비</span>
+              <span>무료</span>
+            </div>
+            <div className="summary__row summary__row--total">
               <span>총 결제금액</span>
               <span>{totalPrice().toLocaleString("ko-KR")}원</span>
             </div>
+            <p className="summary__note">주문 후 3–5 영업일 이내 배송됩니다</p>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -13,15 +13,10 @@ export function CartSection() {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="relative text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
+      <button onClick={() => setOpen(true)}>
         장바구니
-        {mounted && totalCount > 0 && (
-          <span className="absolute -top-2 -right-4 bg-foreground text-background text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-mono">
-            {totalCount > 9 ? "9+" : totalCount}
-          </span>
+        {mounted && (
+          <span className="cart-count">{totalCount}</span>
         )}
       </button>
       <CartDrawer open={open} onClose={() => setOpen(false)} />
