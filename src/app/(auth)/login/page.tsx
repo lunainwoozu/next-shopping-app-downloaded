@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginInput } from "@/schemas/auth.schema";
@@ -8,6 +10,8 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [error, setError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -17,57 +21,67 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginInput) => {
+    setError("");
     const result = await signIn("credentials", { ...data, redirect: false });
-    if (result?.error)
-      return alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
-
+    if (result?.error) {
+      setError("이메일 또는 비밀번호를 확인해주세요.");
+      return;
+    }
     router.push("/");
     router.refresh();
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-sm space-y-4"
-      >
-        <h1 className="text-2xl font-bold">로그인</h1>
-        <div>
+    <div className="auth">
+      <h1>로그인</h1>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="field">
+          <label htmlFor="email">이메일</label>
           <input
+            id="email"
             {...register("email")}
             type="email"
-            placeholder="이메일"
-            className="w-full border p-2 rounded"
+            placeholder="hello@example.com"
           />
           {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
+            <span className="text-xs text-destructive">
+              {errors.email.message}
+            </span>
           )}
         </div>
-        <div>
+
+        <div className="field">
+          <label htmlFor="password">비밀번호</label>
           <input
+            id="password"
             {...register("password")}
             type="password"
-            placeholder="비밀번호"
-            className="w-full border p-2 rounded"
+            placeholder="••••••••"
           />
           {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
+            <span className="text-xs text-destructive">
+              {errors.password.message}
+            </span>
           )}
         </div>
+
+        {error && (
+          <p className="text-xs text-destructive mb-5">{error}</p>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-black text-white p-2 rounded"
+          className="btn btn--primary btn--block"
         >
           {isSubmitting ? "로그인 중..." : "로그인"}
         </button>
-        <p className="text-center text-sm">
-          계정이 없으신가요?{" "}
-          <a href="/register" className="underline">
-            회원가입
-          </a>
-        </p>
       </form>
+
+      <p className="alt">
+        계정이 없으신가요? <Link href="/register">회원가입</Link>
+      </p>
     </div>
   );
 }

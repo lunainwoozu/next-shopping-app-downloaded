@@ -1,13 +1,17 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterInput } from "@/schemas/auth.schema";
-import { register } from "@/actions/auth.actions"; // 회원가입을 처리하는 Server Action 임포트
+import { register } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [error, setError] = useState("");
+
   const {
     register: formRegister,
     handleSubmit,
@@ -15,71 +19,86 @@ export default function RegisterPage() {
   } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = async (data: RegisterInput) => {
+    setError("");
     const formData = new FormData();
     formData.append("email", data.email);
     formData.append("password", data.password);
     formData.append("name", data.name);
 
-    const result = await register(formData); // Server Action 호출하면서 FormData 전달 -> 이렇게 전송된 FormData는 서버 액션의 register 함수의 formData 매개변수로 전달됨
-    if (result?.error) return alert(result.error);
+    const result = await register(formData);
+    if (result?.error) {
+      setError(result.error);
+      return;
+    }
 
-    alert("회원가입 완료! 로그인 페이지로 이동합니다.");
     router.push("/login");
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-sm space-y-4"
-      >
-        <h1 className="text-2xl font-bold">회원가입</h1>
-        <div>
+    <div className="auth">
+      <h1>회원가입</h1>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="field">
+          <label htmlFor="name">이름</label>
           <input
+            id="name"
             {...formRegister("name")}
-            placeholder="이름"
-            className="w-full border p-2 rounded"
+            placeholder="홍길동"
           />
           {errors.name && (
-            <p className="text-red-500 text-sm">{errors.name.message}</p>
+            <span className="text-xs text-destructive">
+              {errors.name.message}
+            </span>
           )}
         </div>
-        <div>
+
+        <div className="field">
+          <label htmlFor="email">이메일</label>
           <input
+            id="email"
             {...formRegister("email")}
             type="email"
-            placeholder="이메일"
-            className="w-full border p-2 rounded"
+            placeholder="hello@example.com"
           />
           {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
+            <span className="text-xs text-destructive">
+              {errors.email.message}
+            </span>
           )}
         </div>
-        <div>
+
+        <div className="field">
+          <label htmlFor="password">비밀번호</label>
           <input
+            id="password"
             {...formRegister("password")}
             type="password"
-            placeholder="비밀번호"
-            className="w-full border p-2 rounded"
+            placeholder="••••••••"
           />
           {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
+            <span className="text-xs text-destructive">
+              {errors.password.message}
+            </span>
           )}
         </div>
+
+        {error && (
+          <p className="text-xs text-destructive mb-5">{error}</p>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-black text-white p-2 rounded"
+          className="btn btn--primary btn--block"
         >
           {isSubmitting ? "처리 중..." : "회원가입"}
         </button>
-        <p className="text-center text-sm">
-          이미 계정이 있으신가요?{" "}
-          <a href="/login" className="underline">
-            로그인
-          </a>
-        </p>
       </form>
+
+      <p className="alt">
+        이미 계정이 있으신가요? <Link href="/login">로그인</Link>
+      </p>
     </div>
   );
 }
