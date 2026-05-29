@@ -25,12 +25,7 @@
   --accent: oklch(18% 0.012 255);
   --accent-text: oklch(99% 0.003 240);
   --accent-soft: oklch(94% 0.01 255);
-
-  /* Type */
-  /* --font-sans: 'Pretendard Variable', Pretendard, Inter, -apple-system,
-               BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo",
-               "Segoe UI", Roboto, sans-serif; */
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  
 
   /* Type scale */
   --t-11: 11px;
@@ -1733,7 +1728,6 @@ p {
   font-size: var(--t-13);
 }
 .admin-table thead th {
-  text-align: left;
   font-weight: 500;
   font-size: var(--t-11);
   letter-spacing: 0.14em;
@@ -1776,6 +1770,7 @@ p {
 }
 .admin-table .cell-cat {
   color: var(--muted);
+  text-align: center;
 }
 .admin-table .cell-price {
   font-family: var(--font-mono);

@@ -37,7 +37,7 @@
 
   /* 폰트 — styles.css 가 --font-sans 정의(Pretendard Variable …) */
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-mono);
   --font-heading: var(--font-sans);
 
   /* 사이드바(shadcn) — 중립 톤으로 매핑 */
