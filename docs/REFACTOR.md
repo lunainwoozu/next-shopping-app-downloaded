@@ -42,6 +42,39 @@
 
 ---
 
+### [CartDrawer] cart-list 가로 스크롤 발생
+
+| 항목 | 내용 |
+| --- | --- |
+| 파일 | `src/components/cart/CartDrawer.tsx` |
+| 현재 상태 | `.drawer__body` 안의 `.cart-list` 또는 `.cart-item` 요소가 드로어 너비(420px)를 초과하여 수평 스크롤바 발생 |
+| 증상 | CartDrawer를 열었을 때 내용이 가로로 넘쳐 `.drawer` 외부까지 레이아웃이 밀림 |
+| 해결 방향 | `.drawer__body`에 `overflow-x: hidden` 추가, 또는 `.cart-item` 그리드/플렉스 컬럼 너비를 `minmax(0, 1fr)` 등으로 제한. `.cart-item__img` 고정 너비가 원인일 수 있으므로 확인 필요 |
+
+---
+
+### [ProductDetail] loading.tsx 스켈레톤과 실제 레이아웃 불일치
+
+| 항목 | 내용 |
+| --- | --- |
+| 파일 | `src/app/products/[id]/loading.tsx` |
+| 현재 상태 | loading 스켈레톤 UI가 실제 `ProductDetail` 레이아웃(`.pdp`, `.pdp__gallery`, `.pdp__info` 등)과 구조적으로 다름 |
+| 증상 | 페이지 로딩 중 레이아웃이 크게 달라 보여 사용자에게 어색한 전환 경험 발생 |
+| 해결 방향 | `loading.tsx` 스켈레톤을 `products/[id]/page.tsx`의 실제 DOM 구조(`.pdp` 2열 레이아웃, 썸네일 열, 정보 열)에 맞게 재작성 |
+
+---
+
+### [HeroBanner] 컬렉션 보기 버튼 텍스트 색상 오류
+
+| 항목 | 내용 |
+| --- | --- |
+| 파일 | `src/components/home/HeroBanner.tsx` |
+| 현재 상태 | 컬렉션 보기 버튼의 텍스트 색상이 배경색과 대비가 맞지 않아 가독성 저하 |
+| 증상 | 버튼 레이블이 배경에 묻혀 잘 보이지 않음 |
+| 해결 방향 | 버튼 클래스(`.btn--ghost` 또는 `.btn--outline`) 확인 후 `--ink` / `--bg` 토큰 기준으로 색상 수정 또는 적절한 btn variant 클래스로 교체 |
+
+---
+
 ## 완료된 항목
 
 _완료 시 이곳에서 삭제 후 `HISTORY.md`에 날짜와 함께 기록_

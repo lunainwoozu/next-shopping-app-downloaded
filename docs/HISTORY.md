@@ -4,6 +4,52 @@
 
 ---
 
+## 2026-05-29 — Next.js 마이그레이션 구현 (Session 05–11)
+
+### Session 05 — 상품 상세 페이지 + Zustand 장바구니 스토어
+
+- **변경 파일**: `src/app/products/[id]/page.tsx`, `src/components/products/ProductDetailClient.tsx` (신규), `src/store/cartStore.ts`, `src/components/products/ProductCard.tsx`, `src/components/products/ProductGrid.tsx`, `src/components/products/AddToCartButton.tsx`
+- **주요 내용**: 동적 라우트 `[id]` 서버 컴포넌트, Zustand cartStore (addItem/removeItem/updateQuantity/clearCart/totalCount/totalPrice + persist + devtools), ProductCard hover 시 AddToCartButton 노출, ProductGrid 반응형 그리드
+- **CSS 전략**: Tailwind (S05까지는 Tailwind 기준)
+
+### Session 06 — 장바구니 페이지 + 사이드 Drawer
+
+- **변경 파일**: `src/app/cart/page.tsx`, `src/components/cart/CartItem.tsx`, `src/components/cart/CartSummary.tsx`, `src/components/cart/CartDrawer.tsx` (신규), `src/components/CartSection.tsx` (신규), `src/components/Header.tsx`, `src/components/MobileMenu.tsx`
+- **주요 내용**: CartDrawer(`data-open` CSS 슬라이드 + ESC 키 닫기), CartSection(`useSyncExternalStore`로 SSR 하이드레이션 안전하게 mounted 판별), Header/MobileMenu에서 CartBadge → CartSection으로 교체, `userId` prop 제거
+- **CSS 전략**: styles.css 클래스 직접 사용 시작 (`.cart`, `.cart-item`, `.summary`, `.drawer`, `.drawer-bd` 등)
+
+### Session 07 — Checkout + 주문 완료
+
+- **변경 파일**: `src/app/checkout/page.tsx`, `src/app/order-complete/page.tsx`
+- **주요 내용**: React Hook Form + Zod (`orderSchema`) 배송지 폼, `POST /api/orders` 호출 후 clearCart + 주문완료 리디렉션, 빈 장바구니 시 `/products` 리디렉션
+- **CSS 전략**: styles.css (`.checkout`, `.panel`, `.field`, `.summary`, `.order-summary__row`, `.order-done`)
+
+### Session 08 — 로그인 / 회원가입
+
+- **변경 파일**: `src/app/(auth)/login/page.tsx`, `src/app/(auth)/register/page.tsx`
+- **주요 내용**: React Hook Form + Zod (`loginSchema` / `registerSchema`), `signIn("credentials")` / Server Action `register`, 에러 인라인 표시
+- **CSS 전략**: styles.css (`.auth`, `.field`, `.btn`)
+
+### Session 09 — 마이페이지
+
+- **변경 파일**: `src/app/mypage/page.tsx`, `src/components/mypage/OrderCard.tsx`
+- **주요 내용**: TanStack Query `useQuery(["orders"])`, 로딩 Skeleton 3개, 에러/빈 상태 처리, OrderCard(`data-status` 속성으로 CSS 상태 배지)
+- **CSS 전략**: styles.css (`.mypage-grid`, `.sidenav`, `.order-card`, `.order-card__head`, `.order-card__items`)
+
+### Session 10 — 관리자 백오피스
+
+- **변경 파일**: `src/app/admin/products/page.tsx`, `src/components/admin/ProductFormModal.tsx`
+- **주요 내용**: TanStack Query + `useMutation`, 재고 스테퍼(inline PATCH), 삭제 2단계 확인(`deleteConfirmId` state), ProductFormModal(등록/수정 겸용, 모바일 row 클릭 → 모달)
+- **CSS 전략**: styles.css (`.admin-table`, `.stock-step`, `.delete-confirm`, `.cell-*`, `.modal-bd`, `.modal`, `.modal__actions`)
+
+### Session 11 — 마무리 (loading / error / not-found)
+
+- **변경 파일**: `src/app/loading.tsx`, `src/app/error.tsx`, `src/app/not-found.tsx`
+- **주요 내용**: HomeLoading Skeleton(히어로 + 상품 그리드), GlobalError(reset + 홈 링크), NotFound(eyebrow 404)
+- **CSS 전략**: styles.css (`.empty`, `.eyebrow`, `.btn`, `.grid--4`, `.card__meta`)
+
+---
+
 ## 2026-05-24
 
 ### system_codes 엔티티 반정규화 구조 반영 — 교육 목적 스키마 개선

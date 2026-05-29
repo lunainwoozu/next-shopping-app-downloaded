@@ -4,6 +4,30 @@
 
 ---
 
+## 마이그레이션 구현 진척도 (JSX 프로토타입 → Next.js App Router)
+
+> CSS 전략: S01–S05 Tailwind / **S06 이후 styles.css 클래스 직접 사용**
+
+| 세션 | 내용 | 상태 |
+|------|------|------|
+| S01–S04 | 프로젝트 셋업, 레이아웃, 홈, 상품 목록 | ✅ 완료 |
+| S05 | 상품 상세, Zustand cartStore, ProductCard/Grid/AddToCartButton | ✅ 완료 |
+| S06 | 장바구니 페이지, CartDrawer, CartSection, Header/MobileMenu 업데이트 | ✅ 완료 |
+| S07 | Checkout 페이지, 주문 완료 페이지 | ✅ 완료 |
+| S08 | 로그인, 회원가입 페이지 | ✅ 완료 |
+| S09 | 마이페이지, OrderCard | ✅ 완료 |
+| S10 | 관리자 상품 관리, ProductFormModal | ✅ 완료 |
+| S11 | loading.tsx, error.tsx, not-found.tsx | ✅ 완료 |
+
+### 잔여 / 확인 필요 항목
+
+- [x] **홈 페이지** (`src/app/page.tsx`) — `section-head`, `eyebrow`, `section-head__right` 적용 완료
+- [x] **상품 관련 전체** — `src/app/products/page.tsx`, `[id]/page.tsx`, `ProductCard`, `ProductGrid`, `AddToCartButton`, `ProductDetail` styles.css 마이그레이션 완료
+- [x] **globals.css 정리** — 중복 `@layer base` 제거, 다크모드 dead code 제거, layout.tsx `antialiased` 제거
+- [ ] **브라우저 통합 테스트** — DB 연결 후 전체 플로우(회원가입 → 로그인 → 상품 → 장바구니 → 주문 → 마이페이지 → 관리자) 검증
+
+---
+
 ## 10일 커리큘럼 진척도
 
 - [x] Day 1: 기획 리뷰 및 환경 스택 확정 (Next.js + Prisma)
