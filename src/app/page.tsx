@@ -18,41 +18,28 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* 히어로 배너 슬라이더 */}
       <HeroBanner />
 
       <section className="mx-auto max-w-[1280px] px-4 md:px-6 mt-16 md:mt-24">
-        <div className="flex items-end justify-between gap-6 mb-8 md:mb-12 pb-6 border-b border-border">
+        <div className="section-head pb-6 border-b border-border">
           <div>
-            <div className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono mb-2">
-              EDITOR&agos;S PICK
-            </div>
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
-              이번 주의 선택
-            </h2>
+            <div className="eyebrow mb-2">EDITOR&apos;S PICK</div>
+            <h2 className="section-head__title">이번 주의 선택</h2>
           </div>
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground whitespace-nowrap"
-          >
+          <Link href="/products" className="section-head__right">
             전체 보기 <ArrowRight size={12} />
           </Link>
         </div>
         <ProductGrid products={featured} />
       </section>
 
-      {/* 섹션 2 — New In (개수 메타, 인라인) */}
       <section className="mx-auto max-w-[1280px] px-4 md:px-6 mt-20 md:mt-28">
-        <div className="flex items-end justify-between gap-6 mb-8 md:mb-12 pb-6 border-b border-border">
+        <div className="section-head pb-6 border-b border-border">
           <div>
-            <div className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono mb-2">
-              NEW IN
-            </div>
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
-              신상품
-            </h2>
+            <div className="eyebrow mb-2">NEW IN</div>
+            <h2 className="section-head__title">신상품</h2>
           </div>
-          <span className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono">
+          <span className="section-head__meta">
             {String(rest.length).padStart(2, "0")} ITEMS
           </span>
         </div>
