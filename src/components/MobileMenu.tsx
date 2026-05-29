@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { CartSection } from "./CartSection";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { SignOutButton } from "./SignOutButton";
+
+const CATEGORIES = ["상의", "하의", "가방", "신발", "액세서리"];
 
 type Props = {
   userName?: string | null;
@@ -17,78 +18,77 @@ export function MobileMenu({ userName, isAdmin, isLoggedIn }: Props) {
   const close = () => setOpen(false);
 
   return (
-    <div className="md:hidden">
+    <>
+      {/* 햄버거 버튼 (≤1024px에서만 노출) */}
       <button
+        className="hamburger"
         onClick={() => setOpen((v) => !v)}
-        className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
         aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
       >
-        {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        {open ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {open && (
-        <>
-          {/* 배경 오버레이 */}
-          <div
-            className="fixed inset-0 top-16 bg-black/20 z-40"
-            onClick={close}
-          />
+      {/* 배경 오버레이 */}
+      <div className="mobile-menu-bd" data-open={open} onClick={close} />
 
-          {/* 드롭다운 */}
-          <div className="fixed top-16 left-0 right-0 bg-white border-b shadow-lg z-50 px-6 py-2 flex flex-col">
-            <div className="pb-1 flex items-center justify-between">
-              {isLoggedIn &&(
-                <span className="text-sm text-gray-500 py-3 font-bold">
-                  {userName} 님
-                </span>
-              )}
-              {isAdmin && (
-                <Link
-                  href="/admin/products"
-                  className="text-sm text-blue-600 font-medium py-3 hover:text-blue-800"
-                  onClick={close}
-                >
-                  관리자
-                </Link>
-              )}
+      {/* 드롭다운 패널 */}
+      <nav className="mobile-menu" data-open={open}>
+        <div className="container">
+          {isLoggedIn && userName && (
+            <div className="mobile-menu__user">
+              <strong>{userName}</strong> 님, 안녕하세요!
             </div>
+          )}
+
+          <Link href="/products" className="mobile-menu__link" onClick={close}>
+            전체 상품 <ArrowRight size={14} className="arr" />
+          </Link>
+
+          {CATEGORIES.map((c) => (
             <Link
-              href="/products"
-              className="text-sm text-gray-700 py-3 border-b hover:text-gray-900"
+              key={c}
+              href={`/products?category=${encodeURIComponent(c)}`}
+              className="mobile-menu__link"
               onClick={close}
             >
-              상품 목록
+              {c} <ArrowRight size={14} className="arr" />
             </Link>
+          ))}
 
-            <div className="py-3 border-b">
-              <CartSection />
-            </div>
+          {isAdmin && (
+            <Link
+              href="/admin/products"
+              className="mobile-menu__link mobile-menu__link--admin"
+              onClick={close}
+            >
+              관리자 <ArrowRight size={14} className="arr" />
+            </Link>
+          )}
 
+          <div className="mobile-menu__cta">
             {isLoggedIn ? (
               <>
                 <Link
                   href="/mypage"
-                  className="text-sm text-gray-700 py-3 border-b hover:text-gray-900"
+                  className="btn btn--line btn--block"
                   onClick={close}
                 >
                   마이페이지
                 </Link>
-                <div className="py-3">
-                  <SignOutButton />
-                </div>
+                <SignOutButton />
               </>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="text-sm text-gray-700 py-3 border-b hover:text-gray-900"
+                  className="btn btn--line btn--block"
                   onClick={close}
                 >
                   로그인
                 </Link>
                 <Link
                   href="/register"
-                  className="text-sm bg-gray-900 text-white px-4 py-2.5 rounded-md hover:bg-gray-700 text-center my-3"
+                  className="btn btn--primary btn--block"
                   onClick={close}
                 >
                   회원가입
@@ -96,8 +96,8 @@ export function MobileMenu({ userName, isAdmin, isLoggedIn }: Props) {
               </>
             )}
           </div>
-        </>
-      )}
-    </div>
+        </div>
+      </nav>
+    </>
   );
 }
