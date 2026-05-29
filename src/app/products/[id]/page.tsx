@@ -25,11 +25,10 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-[1280px] px-4 md:px-6 pt-8 md:pt-12">
-      {/* PDP 2컬럼 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
+      <div className="pdp">
         {/* 갤러리 */}
-        <div className="space-y-2">
-          <div className="relative aspect-[4/5] bg-secondary overflow-hidden">
+        <div className="pdp__gallery">
+          <div className="pdp__hero">
             {product.imageUrl && (
               <Image
                 src={product.imageUrl}
@@ -41,14 +40,9 @@ export default async function ProductDetailPage({ params }: Props) {
               />
             )}
           </div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="pdp__thumbs">
             {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={`relative aspect-square bg-secondary overflow-hidden border-2 transition-colors ${
-                  i === 0 ? "border-foreground" : "border-transparent"
-                }`}
-              >
+              <div key={i} className="pdp__thumb" data-active={i === 0}>
                 {product.imageUrl && (
                   <Image
                     src={product.imageUrl}
@@ -64,63 +58,49 @@ export default async function ProductDetailPage({ params }: Props) {
         </div>
 
         {/* 상품 정보 */}
-        <div className="py-2">
-          {/* 브레드크럼 */}
-          <nav className="flex items-center gap-1 text-xs text-muted-foreground mb-6">
-            <Link href="/" className="hover:text-foreground transition-colors">
-              Home
-            </Link>
+        <div className="pdp__info">
+          <nav className="pdp__crumbs">
+            <Link href="/">Home</Link>
             {product.category && (
               <>
-                <span>/</span>
+                <span> / </span>
                 <Link
                   href={`/products?category=${encodeURIComponent(product.category)}`}
-                  className="hover:text-foreground transition-colors"
                 >
                   {product.category}
                 </Link>
               </>
             )}
-            <span>/</span>
-            <span className="text-foreground">{product.name}</span>
+            <span> / </span>
+            <span>{product.name}</span>
           </nav>
 
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground mb-3">
-            {product.name}
-          </h1>
-          <div className="text-2xl font-semibold tabular-nums text-foreground mb-6">
+          <h1 className="pdp__name">{product.name}</h1>
+          <div className="pdp__price">
             {product.price.toLocaleString("ko-KR")}원
           </div>
 
           {product.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-[50ch]">
-              {product.description}
-            </p>
+            <p className="pdp__desc">{product.description}</p>
           )}
 
-          {/* 스펙 행 */}
-          <dl className="border-t border-border">
-            <div className="grid grid-cols-[120px_1fr] py-4 border-b border-border text-sm">
-              <dt className="text-muted-foreground">소재</dt>
-              <dd className="text-foreground">코튼 100% · 한국 제작</dd>
+          <dl>
+            <div className="pdp__row">
+              <dt>소재</dt>
+              <dd>코튼 100% · 한국 제작</dd>
             </div>
-            <div className="grid grid-cols-[120px_1fr] py-4 border-b border-border text-sm">
-              <dt className="text-muted-foreground">배송</dt>
-              <dd className="text-foreground">
-                주문 후 1-2일 내 출고 · 3만원 이상 무료
-              </dd>
+            <div className="pdp__row">
+              <dt>배송</dt>
+              <dd>주문 후 1-2일 내 출고 · 3만원 이상 무료</dd>
             </div>
-            <div className="grid grid-cols-[120px_1fr] py-4 border-b border-border text-sm">
-              <dt className="text-muted-foreground">재고</dt>
-              <dd
-                className={`font-mono ${product.stock === 0 ? "text-muted-foreground" : "text-foreground"}`}
-              >
+            <div className="pdp__row">
+              <dt>재고</dt>
+              <dd className={`font-mono ${product.stock === 0 ? "text-muted-foreground" : ""}`}>
                 {product.stock > 0 ? `${product.stock} · 충분` : "품절"}
               </dd>
             </div>
           </dl>
 
-          {/* 사이즈·수량·담기 — Client */}
           {product.stock > 0 ? (
             <ProductDetail product={product} />
           ) : (
@@ -131,17 +111,12 @@ export default async function ProductDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* 연관 상품 */}
       {related.length > 0 && (
         <div className="mt-24 md:mt-32">
-          <div className="flex items-end justify-between gap-6 mb-8 pb-6 border-b border-border">
+          <div className="section-head pb-6 border-b border-border">
             <div>
-              <div className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono mb-2">
-                RELATED
-              </div>
-              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground">
-                함께 보면 좋은 상품
-              </h2>
+              <div className="eyebrow mb-2">RELATED</div>
+              <h2 className="section-head__title">함께 보면 좋은 상품</h2>
             </div>
           </div>
           <ProductGrid products={related} />

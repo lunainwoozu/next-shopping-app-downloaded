@@ -37,43 +37,31 @@ export default async function ProductsPage({
     .map((p) => p.category)
     .filter(Boolean) as string[];
 
-  const chipBase =
-    "px-3 py-1.5 text-[11px] tracking-[0.08em] uppercase border transition-colors";
-  const chipActive = "bg-foreground text-background border-foreground";
-  const chipIdle =
-    "border-border text-muted-foreground hover:border-foreground hover:text-foreground";
-
   return (
     <div className="mx-auto max-w-[1280px] px-4 md:px-6 pt-8 md:pt-12">
-      {/* 섹션 헤드 */}
-      <div className="flex items-end justify-between gap-6 mb-8 pb-6 border-b border-border">
+      <div className="section-head pb-6 border-b border-border">
         <div>
-          <div className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono mb-2">
-            {query ? "SEARCH" : "SHOP"}
-          </div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+          <div className="eyebrow mb-2">{query ? "SEARCH" : "SHOP"}</div>
+          <h1 className="section-head__title">
             {query ? `"${query}" 검색 결과` : (category ?? "전체 상품")}
           </h1>
         </div>
-        <span className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono whitespace-nowrap">
+        <span className="section-head__meta">
           {String(products.length).padStart(2, "0")} ITEMS
         </span>
       </div>
 
-      {/* 카테고리 칩 — 검색 중엔 숨김 */}
       {!query && (
-        <div className="flex gap-2 mb-10 flex-wrap">
-          <Link
-            href="/products"
-            className={`${chipBase} ${!category ? chipActive : chipIdle}`}
-          >
+        <div className="chips">
+          <Link href="/products" className="chip" data-active={!category}>
             전체
           </Link>
           {categoryList.map((cat) => (
             <Link
               key={cat}
               href={`/products?category=${encodeURIComponent(cat)}`}
-              className={`${chipBase} ${category === cat ? chipActive : chipIdle}`}
+              className="chip"
+              data-active={category === cat}
             >
               {cat}
             </Link>
@@ -81,18 +69,14 @@ export default async function ProductsPage({
         </div>
       )}
 
-      {/* 상품 목록 / 빈 상태 */}
       {products.length === 0 ? (
-        <div className="py-24 text-center">
-          <p className="text-sm text-muted-foreground mb-4">
+        <div className="empty">
+          <p className="empty__sub">
             {query
               ? `"${query}"에 대한 결과가 없습니다.`
               : "상품이 없습니다."}
           </p>
-          <Link
-            href="/products"
-            className="text-xs tracking-[0.08em] uppercase underline underline-offset-4 text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <Link href="/products" className="btn btn--ghost mt-4">
             전체 상품 보기
           </Link>
         </div>
