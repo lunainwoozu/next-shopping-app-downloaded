@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { SignOutButton } from "./SignOutButton";
-import { CartBadge } from "./CartBadge";
+import { CartSection } from "./CartSection";
 import { MobileMenu } from "./MobileMenu";
 
 const CATEGORIES = ["상의", "하의", "가방", "신발", "액세서리"];
@@ -41,7 +41,7 @@ export async function Header() {
 
         {/* 데스크톱 인증 영역 */}
         <div className="hidden md:flex items-center gap-5 justify-self-end text-[13px]">
-          <CartBadge userId={session?.user?.id} />
+          <CartSection />
           {session?.user?.role === "admin" && (
             <Link
               href="/admin/products"
@@ -87,7 +87,6 @@ export async function Header() {
             userName={session?.user?.name}
             isAdmin={session?.user?.role === "admin"}
             isLoggedIn={!!session}
-            userId={session?.user?.id}
           />
         </div>
       </div>

@@ -3,17 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { CartBadge } from "./CartBadge";
+import { CartSection } from "./CartSection";
 import { SignOutButton } from "./SignOutButton";
 
 type Props = {
   userName?: string | null;
   isAdmin?: boolean;
   isLoggedIn: boolean;
-  userId?: string;
 };
 
-export function MobileMenu({ userName, isAdmin, isLoggedIn, userId }: Props) {
+export function MobileMenu({ userName, isAdmin, isLoggedIn }: Props) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -62,7 +61,7 @@ export function MobileMenu({ userName, isAdmin, isLoggedIn, userId }: Props) {
             </Link>
 
             <div className="py-3 border-b">
-              <CartBadge userId={userId} />
+              <CartSection />
             </div>
 
             {isLoggedIn ? (
