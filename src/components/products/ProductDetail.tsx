@@ -31,22 +31,17 @@ export function ProductDetail({ product }: Props) {
   }
 
   return (
-    <div className="space-y-8 mt-6">
+    <div className="mt-6">
       {/* 사이즈 선택 */}
-      <div>
-        <div className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono mb-3">
-          SIZE · {size}
-        </div>
-        <div className="flex gap-2 flex-wrap">
+      <div className="mb-8">
+        <div className="eyebrow mb-3">SIZE · {size}</div>
+        <div className="pill-chips">
           {SIZES.map((s) => (
             <button
               key={s}
               onClick={() => setSize(s)}
-              className={`w-12 h-12 text-xs tracking-[0.08em] border transition-colors ${
-                s === size
-                  ? "bg-foreground text-background border-foreground"
-                  : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
-              }`}
+              className="pill-chip"
+              data-active={s === size}
             >
               {s}
             </button>
@@ -55,38 +50,19 @@ export function ProductDetail({ product }: Props) {
       </div>
 
       {/* 수량 */}
-      <div className="flex items-center gap-4">
-        <div className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono w-16">
-          QTY
-        </div>
-        <div className="flex items-center border border-border">
-          <button
-            onClick={() => setQty((q) => Math.max(1, q - 1))}
-            className="w-10 h-10 text-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            −
-          </button>
-          <span className="w-10 h-10 flex items-center justify-center text-sm tabular-nums text-foreground border-x border-border">
-            {qty}
-          </span>
-          <button
-            onClick={() => setQty((q) => q + 1)}
-            className="w-10 h-10 text-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            +
-          </button>
+      <div className="flex items-center gap-4 mb-8">
+        <div className="eyebrow">QTY</div>
+        <div className="pdp__qty">
+          <button onClick={() => setQty((q) => Math.max(1, q - 1))}>−</button>
+          <input type="text" value={qty} readOnly />
+          <button onClick={() => setQty((q) => q + 1)}>+</button>
         </div>
       </div>
 
       {/* 액션 버튼 */}
-      <div className="flex gap-3 pt-2">
-        <button className="flex-1 h-12 border border-foreground text-foreground text-sm hover:bg-foreground hover:text-background transition-colors">
-          찜
-        </button>
-        <button
-          onClick={handleAddToCart}
-          className="flex-[2] h-12 bg-primary text-primary-foreground text-sm hover:opacity-90 transition-opacity"
-        >
+      <div className="pdp__actions">
+        <button className="btn btn--ghost">찜</button>
+        <button onClick={handleAddToCart} className="btn btn--primary">
           장바구니 담기
         </button>
       </div>

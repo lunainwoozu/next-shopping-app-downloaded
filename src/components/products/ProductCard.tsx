@@ -21,9 +21,8 @@ export function ProductCard({
   const soldOut = product.stock === 0;
 
   return (
-    <Link href={`/products/${product.id}`} className="group block">
-      {/* 미디어 — 4:5 세로 비율 */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+    <Link href={`/products/${product.id}`} className="card">
+      <div className="card__media">
         {product.imageUrl && (
           <Image
             src={product.imageUrl}
@@ -31,30 +30,20 @@ export function ProductCard({
             fill
             priority={priority}
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            className="card__img"
           />
         )}
-
-        {soldOut && (
-          <div className="absolute inset-0 grid place-items-center bg-background/70 text-xs tracking-[0.15em] uppercase text-muted-foreground">
-            sold out
-          </div>
-        )}
-
+        {soldOut && <div className="card__soldout">sold out</div>}
         {!soldOut && (
-          <div className="absolute inset-x-2 bottom-2 flex gap-2 translate-y-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="card__hover">
             <AddToCartButton product={product} />
           </div>
         )}
       </div>
-
-      {/* 메타 — 카테고리 / 이름 / 가격 */}
-      <div className="flex flex-col gap-1 pt-3">
-        <span className="text-[11px] tracking-[0.1em] uppercase text-muted-foreground font-mono">
-          {product.category}
-        </span>
-        <h3 className="text-sm text-foreground line-clamp-1">{product.name}</h3>
-        <span className="text-sm text-foreground tabular-nums">
+      <div className="card__meta">
+        <span className="card__cat">{product.category}</span>
+        <h3 className="card__name line-clamp-1">{product.name}</h3>
+        <span className="card__price">
           {product.price.toLocaleString("ko-KR")}원
         </span>
       </div>

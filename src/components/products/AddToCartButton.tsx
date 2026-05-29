@@ -13,7 +13,7 @@ export function AddToCartButton({ product }: Props) {
     <button
       type="button"
       onClick={(e) => {
-        e.preventDefault(); // 카드 Link 이동 막기
+        e.preventDefault();
         e.stopPropagation();
         addItem({
           id: product.id,
@@ -22,7 +22,7 @@ export function AddToCartButton({ product }: Props) {
           imageUrl: product.imageUrl ?? "",
         });
       }}
-      className="flex-1 h-11 bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+      className="card__add"
     >
       장바구니 담기
     </button>
