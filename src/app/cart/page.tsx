@@ -6,39 +6,38 @@ import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
 
 export default function CartPage() {
-  const items = useCartStore((state) => state.items);
-
-  if (items.length === 0) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-5xl mb-4">🛒</p>
-        <p className="text-lg text-gray-500 mb-6">장바구니가 비어 있습니다</p>
-        <Link
-          href="/products"
-          className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
-        >
-          쇼핑 계속하기
-        </Link>
-      </div>
-    );
-  }
+  const items = useCartStore((s) => s.items);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-8">장바구니</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* 장바구니 아이템 목록 */}
-        <div className="lg:col-span-2">
-          {items.map((item) => (
-            <CartItem key={item.id} item={item} />
-          ))}
+    <div className="pt-8">
+      <div className="section-head">
+        <div>
+          <div className="eyebrow mb-2">CART</div>
+          <h2 className="section-head__title">장바구니</h2>
         </div>
+        <span className="section-head__meta">
+          {String(items.length).padStart(2, "0")} ITEMS
+        </span>
+      </div>
 
-        {/* 결제 요약 */}
-        <div className="lg:col-span-1">
+      {items.length === 0 ? (
+        <div className="empty">
+          <div className="empty__title">장바구니가 비어있습니다</div>
+          <div className="empty__sub">마음에 드는 상품을 찾아 담아보세요.</div>
+          <Link href="/products" className="btn btn--ghost mt-4">
+            전체 상품 보기
+          </Link>
+        </div>
+      ) : (
+        <div className="cart">
+          <div className="cart-list">
+            {items.map((item) => (
+              <CartItem key={item.id} item={item} />
+            ))}
+          </div>
           <CartSummary />
         </div>
-      </div>
+      )}
     </div>
   );
 }
