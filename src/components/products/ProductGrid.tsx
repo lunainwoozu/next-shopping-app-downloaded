@@ -17,14 +17,14 @@ interface ProductGridProps {
 export function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-400">
-        <p className="text-lg">상품이 없습니다.</p>
+      <div className="py-24 text-center text-muted-foreground text-sm">
+        상품이 없습니다.
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12 md:gap-x-6 md:gap-y-1">
       {products.map((product, index) => (
         <ProductCard
           key={product.id}

@@ -1,97 +1,62 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AddToCartButton } from "./AddToCartButton";
 
 interface Product {
   id: string;
   name: string;
-  description: string | null;
   price: number;
   stock: number;
   category: string | null;
   imageUrl: string | null;
 }
 
-interface ProductCardProps {
+export function ProductCard({
+  product,
+  priority = false,
+}: {
   product: Product;
-  priority?: boolean; // LCP 최적화를 위해 상단 이미지에 priority 속성 추가
-}
-
-export function ProductCard({ product, priority = false }: ProductCardProps) {
-  // 실제 서비스라면 DB에 있을 데이터지만, UI 디자인 실습을 위해 가상으로 계산합니다.
-  const discountRate = (product.name.length % 30) + 10; // 10~40% 랜덤 할인율
-  const originalPrice = Math.floor(product.price / (1 - discountRate / 100));
-  const isFreeShipping = product.price >= 30000;
+  priority?: boolean;
+}) {
+  const soldOut = product.stock === 0;
 
   return (
     <Link href={`/products/${product.id}`} className="group block">
-      <div className="flex flex-col gap-3">
-        {/* 1. 상품 이미지 영역 */}
-        <div className="relative aspect-square bg-gray-100 rounded-md overflow-hidden">
-          {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              priority={priority}
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-              이미지 없음
-            </div>
-          )}
-        </div>
+      {/* 미디어 — 4:5 세로 비율 */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+        {product.imageUrl && (
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            fill
+            priority={priority}
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          />
+        )}
 
-        {/* 2. 상품 텍스트 정보 영역 */}
-        <div className="flex flex-col gap-1">
-          {/* 상품명 */}
-          <h3 className="font-medium text-gray-800 text-sm md:text-base line-clamp-2 leading-snug">
-            {product.name}
-          </h3>
-
-          {/* 원가 (취소선) */}
-          <div className="flex items-center gap-1 mt-1">
-            <span className="text-xs text-gray-500">쿠폰적용가</span>
-            <span className="text-xs text-gray-400 line-through">
-              {originalPrice.toLocaleString("ko-KR")}원
-            </span>
+        {soldOut && (
+          <div className="absolute inset-0 grid place-items-center bg-background/70 text-xs tracking-[0.15em] uppercase text-muted-foreground">
+            sold out
           </div>
+        )}
 
-          {/* 할인가격 영역 */}
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-red-600 text-lg">
-              {discountRate}%
-            </span>
-            <span className="font-bold text-gray-900 text-lg">
-              {product.price.toLocaleString("ko-KR")}원
-            </span>
+        {!soldOut && (
+          <div className="absolute inset-x-2 bottom-2 flex gap-2 translate-y-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+            <AddToCartButton product={product} />
           </div>
+        )}
+      </div>
 
-          {/* 배송비 정보 */}
-          <span className="text-xs text-gray-500 mt-1">
-            {isFreeShipping ? "무료배송" : "배송비 3,000원"}
-          </span>
-
-          {/* 추가 배지 (스마일배송 등) */}
-          {isFreeShipping && (
-            <div className="mt-1 flex items-center gap-1">
-              <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold">
-                빠른배송
-              </span>
-              <span className="text-[11px] text-gray-600 font-medium">
-                내일 도착 보장
-              </span>
-            </div>
-          )}
-
-          {/* 품절 표시 */}
-          {product.stock === 0 && (
-            <span className="text-xs text-red-500 mt-1 block font-bold">
-              품절된 상품입니다
-            </span>
-          )}
-        </div>
+      {/* 메타 — 카테고리 / 이름 / 가격 */}
+      <div className="flex flex-col gap-1 pt-3">
+        <span className="text-[11px] tracking-[0.1em] uppercase text-muted-foreground font-mono">
+          {product.category}
+        </span>
+        <h3 className="text-sm text-foreground line-clamp-1">{product.name}</h3>
+        <span className="text-sm text-foreground tabular-nums">
+          {product.price.toLocaleString("ko-KR")}원
+        </span>
       </div>
     </Link>
   );
