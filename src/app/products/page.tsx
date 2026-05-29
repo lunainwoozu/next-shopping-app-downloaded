@@ -1,74 +1,104 @@
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ProductGrid } from "@/components/products/ProductGrid";
 
 interface ProductsPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }
 
 export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
-  const { category } = await searchParams;
+  const { category, q } = await searchParams;
+  const query = q?.trim() ?? "";
 
-  // await new Promise((resolve) => setTimeout(resolve, 3000)); // ← 이 줄 추가
-
-  // category 값이 있으면 해당 카테고리만, 없으면 전체 상품 조회
-  // URL: /products → category = undefined → 전체
-  // URL: /products?category=상의 → category = "상의" → 상의만
   const products = await prisma.product.findMany({
-    where: category ? { category } : undefined,
+    where: {
+      ...(category ? { category } : {}),
+      ...(query
+        ? {
+            OR: [
+              { name: { contains: query, mode: "insensitive" } },
+              { category: { contains: query, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    },
     orderBy: { createdAt: "desc" },
   });
 
-  // 카테고리 필터 버튼 목록을 만들기 위해 DB에 존재하는 카테고리만 동적으로 조회
-  // select: category 컬럼만 가져옴 (id, name 등 불필요한 컬럼 제외)
-  // distinct: 중복 제거 (상의가 여러 개여도 "상의" 하나만 반환)
-  // where: category가 null인 상품은 제외
   const categories = await prisma.product.findMany({
     select: { category: true },
     distinct: ["category"],
     where: { category: { not: null } },
   });
 
-  // Prisma가 반환한 객체 배열 [{ category: "상의" }, ...]에서 문자열 배열 ["상의", ...]로 변환
-  // filter(Boolean): null/undefined가 섞여 있을 경우 제거, as string[]로 타입 단언
   const categoryList = categories
     .map((p) => p.category)
     .filter(Boolean) as string[];
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">상품 목록</h1>
+  const chipBase =
+    "px-3 py-1.5 text-[11px] tracking-[0.08em] uppercase border transition-colors";
+  const chipActive = "bg-foreground text-background border-foreground";
+  const chipIdle =
+    "border-border text-muted-foreground hover:border-foreground hover:text-foreground";
 
-      {/* 카테고리 필터 */}
-      <div className="flex gap-2 mb-8 flex-wrap">
-        <a
-          href="/products"
-          className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-            !category
-              ? "bg-gray-900 text-white border-gray-900"
-              : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
-          }`}
-        >
-          전체
-        </a>
-        {categoryList.map((cat) => (
-          <a
-            key={cat}
-            href={`/products?category=${encodeURIComponent(cat)}`}
-            className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-              category === cat
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
-            }`}
-          >
-            {cat}
-          </a>
-        ))}
+  return (
+    <div className="mx-auto max-w-[1280px] px-4 md:px-6 pt-8 md:pt-12">
+      {/* 섹션 헤드 */}
+      <div className="flex items-end justify-between gap-6 mb-8 pb-6 border-b border-border">
+        <div>
+          <div className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono mb-2">
+            {query ? "SEARCH" : "SHOP"}
+          </div>
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+            {query ? `"${query}" 검색 결과` : (category ?? "전체 상품")}
+          </h1>
+        </div>
+        <span className="text-[11px] tracking-[0.12em] uppercase text-muted-foreground font-mono whitespace-nowrap">
+          {String(products.length).padStart(2, "0")} ITEMS
+        </span>
       </div>
 
-      {/* 상품 목록 */}
-      <ProductGrid products={products} />
+      {/* 카테고리 칩 — 검색 중엔 숨김 */}
+      {!query && (
+        <div className="flex gap-2 mb-10 flex-wrap">
+          <Link
+            href="/products"
+            className={`${chipBase} ${!category ? chipActive : chipIdle}`}
+          >
+            전체
+          </Link>
+          {categoryList.map((cat) => (
+            <Link
+              key={cat}
+              href={`/products?category=${encodeURIComponent(cat)}`}
+              className={`${chipBase} ${category === cat ? chipActive : chipIdle}`}
+            >
+              {cat}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* 상품 목록 / 빈 상태 */}
+      {products.length === 0 ? (
+        <div className="py-24 text-center">
+          <p className="text-sm text-muted-foreground mb-4">
+            {query
+              ? `"${query}"에 대한 결과가 없습니다.`
+              : "상품이 없습니다."}
+          </p>
+          <Link
+            href="/products"
+            className="text-xs tracking-[0.08em] uppercase underline underline-offset-4 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            전체 상품 보기
+          </Link>
+        </div>
+      ) : (
+        <ProductGrid products={products} />
+      )}
     </div>
   );
 }

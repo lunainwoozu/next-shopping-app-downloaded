@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
 import "pretendard/dist/web/variable/pretendardvariable.css";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { QueryProvider } from "@/providers/QueryProvider"; // ← 추가
 import { Footer } from "@/components/Footer";
-
-// const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "ShopApp",
@@ -22,7 +15,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko">
-      <body className={`${geistMono.variable} antialiased`}>
+      <body className={`antialiased`}>
         <QueryProvider>
           {" "}
           {/* ← 추가 */}

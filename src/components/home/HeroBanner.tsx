@@ -39,7 +39,7 @@ export function HeroBanner() {
       {/* 우: 이미지 */}
       <div className="relative bg-secondary min-h-[400px] md:min-h-0">
         <Image
-          src="/public/images/products/product7.jpg"
+          src="/images/products/product7.jpg"
           alt=""
           fill
           priority
