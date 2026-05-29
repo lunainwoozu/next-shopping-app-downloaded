@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { ProductDetailClient } from "@/components/products/ProductDetailClient";
+import { ProductDetail } from "@/components/products/ProductDetail";
 import { ProductGrid } from "@/components/products/ProductGrid";
 
 interface Props {
@@ -122,7 +122,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
           {/* 사이즈·수량·담기 — Client */}
           {product.stock > 0 ? (
-            <ProductDetailClient product={product} />
+            <ProductDetail product={product} />
           ) : (
             <div className="mt-6 h-12 flex items-center justify-center bg-muted text-muted-foreground text-sm">
               품절된 상품입니다

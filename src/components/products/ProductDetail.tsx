@@ -14,7 +14,7 @@ interface Props {
   };
 }
 
-export function ProductDetailClient({ product }: Props) {
+export function ProductDetail({ product }: Props) {
   const [size, setSize] = useState("M");
   const [qty, setQty] = useState(1);
   const addItem = useCartStore((s) => s.addItem);
